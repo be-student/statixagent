@@ -87,10 +87,12 @@ fixtures; everything that touches the live OS sits behind an interface and `//go
 
 ## Phase 8 — Self-update
 
-- [ ] `internal/update`: GitHub Releases check, download to temp, SHA256 + ed25519
-      signature verify, atomic rename, systemd restart, crash-loop rollback marker.
-      Unit tests for version compare, checksum/signature verification, swap logic.
-- [ ] Bot `/update` + `/update confirm` integration.
+- [x] `internal/update`: GitHub Releases check, download to temp, SHA256 + ed25519
+      signature verify (mandatory — refuses without embedded key), atomic rename with
+      .prev rollback copy, systemd restart, crash-loop RollbackGuard. Unit tests for
+      version compare, tampered binary, wrong-key signature, swap, rollback.
+- [x] Bot `/update` + `/update confirm` integration (wired in main_linux.go; key and
+      version stamped via -ldflags at release time). Auto-update loop when opted in.
 
 ## Phase 9 — Hardening & release
 
