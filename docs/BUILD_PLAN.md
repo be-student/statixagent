@@ -63,13 +63,12 @@ fixtures; everything that touches the live OS sits behind an interface and `//go
 
 ## Phase 5 — Telegram bot
 
-- [ ] `internal/telegram`: minimal Bot API client (sendMessage, getUpdates long-poll) —
-      no third-party SDK. Chat-ID allowlist (only the configured chat may command).
-- [ ] `internal/bot`: command router — `/status`, `/cpu`, `/mem`, `/disk`, `/net`,
-      `/temp`, `/battery`, `/services`, `/docker`, `/ssh [history|fails]`,
-      `/update [confirm]`. Formatting helpers (HTML messages). Unit tests on the router
-      and formatters with a fake transport.
-- [ ] Push alerts wired from the alert engine to the bot sender.
+- [x] `internal/telegram`: minimal Bot API client (sendMessage, getUpdates long-poll,
+      4096-char message splitting) — no third-party SDK.
+- [x] `internal/bot`: command router with chat-ID allowlist + formatters for status,
+      cpu/mem/disk/net/temp/battery, services, docker, ssh sessions/history/fails,
+      and push alerts. HTML-escaped, emoji-status, usage bars. Unit tests.
+- [ ] Push alerts wired from the alert engine to the bot sender (Phase 6 wiring).
 
 ## Phase 6 — Agent daemon
 
