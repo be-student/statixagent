@@ -57,7 +57,7 @@ fixtures; everything that touches the live OS sits behind an interface and `//go
 
 ## Phase 4 — Alert engine
 
-- [ ] `internal/alert`: threshold rules (CPU %, mem %, disk %, temp, battery %),
+- [x] `internal/alert`: threshold rules (CPU %, mem %, disk %, temp, battery %),
       hysteresis (fire once, clear on recovery), cooldown/dedupe, severity levels.
       Power-loss and new-SSH-login as event alerts (no threshold). Unit tests.
 

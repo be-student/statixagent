@@ -1,0 +1,133 @@
+// Package alert decides when a measurement or event becomes a notification.
+// Threshold alerts use hysteresis (fire once on crossing, clear on recovery
+// past a margin) plus a cooldown so a flapping metric cannot spam the chat.
+// Event alerts (new login, power loss) dedupe by key + cooldown only.
+package alert
+
+import (
+	"fmt"
+	"sync"
+	"time"
+)
+
+// Severity orders alerts for formatting.
+type Severity int
+
+const (
+	Info Severity = iota
+	Warning
+	Critical
+)
+
+func (s Severity) String() string {
+	switch s {
+	case Critical:
+		return "critical"
+	case Warning:
+		return "warning"
+	default:
+		return "info"
+	}
+}
+
+// Alert is one notification to push to the bot.
+type Alert struct {
+	Key      string // stable identity for dedupe ("cpu", "disk:/", "ssh:login")
+	Severity Severity
+	Title    string
+	Body     string
+	Resolved bool // recovery notice for a previously firing threshold
+	At       time.Time
+}
+
+// Engine tracks firing state per key.
+type Engine struct {
+	// Cooldown is the minimum gap between two fires of the same key.
+	Cooldown time.Duration
+
+	mu        sync.Mutex
+	active    map[string]bool
+	lastFired map[string]time.Time
+}
+
+// New returns an Engine with the given re-fire cooldown.
+func New(cooldown time.Duration) *Engine {
+	return &Engine{
+		Cooldown:  cooldown,
+		active:    map[string]bool{},
+		lastFired: map[string]time.Time{},
+	}
+}
+
+// ThresholdOpts configures one threshold evaluation.
+type ThresholdOpts struct {
+	Key         string
+	Title       string
+	Severity    Severity
+	Value       float64
+	Threshold   float64
+	ClearMargin float64 // recovery requires passing threshold by this much
+	Below       bool    // true: alert when Value < Threshold (battery)
+	Unit        string  // "%", "°C" — used in the body text
+}
+
+// Threshold evaluates one rule. It returns a firing alert on the violating
+// crossing, a Resolved alert when the value recovers past the margin, and
+// nil otherwise.
+func (e *Engine) Threshold(o ThresholdOpts, now time.Time) *Alert {
+	violating := o.Value >= o.Threshold
+	recovered := o.Value < o.Threshold-o.ClearMargin
+	if o.Below {
+		violating = o.Value <= o.Threshold
+		recovered = o.Value > o.Threshold+o.ClearMargin
+	}
+
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	switch {
+	case violating && !e.active[o.Key]:
+		if last, ok := e.lastFired[o.Key]; ok && now.Sub(last) < e.Cooldown {
+			return nil // refuse to flap inside the cooldown
+		}
+		e.active[o.Key] = true
+		e.lastFired[o.Key] = now
+		cmp := "above"
+		if o.Below {
+			cmp = "below"
+		}
+		return &Alert{
+			Key: o.Key, Severity: o.Severity, Title: o.Title, At: now,
+			Body: fmt.Sprintf("%.1f%s is %s the %.1f%s threshold", o.Value, o.Unit, cmp, o.Threshold, o.Unit),
+		}
+	case recovered && e.active[o.Key]:
+		e.active[o.Key] = false
+		return &Alert{
+			Key: o.Key, Severity: Info, Title: o.Title, Resolved: true, At: now,
+			Body: fmt.Sprintf("recovered: now %.1f%s", o.Value, o.Unit),
+		}
+	}
+	return nil
+}
+
+// Event emits an event alert unless the same key fired within the cooldown.
+// cooldownOverride > 0 replaces the engine default (0 = always emit).
+func (e *Engine) Event(key, title, body string, sev Severity, now time.Time, cooldownOverride time.Duration) *Alert {
+	cd := e.Cooldown
+	if cooldownOverride != 0 {
+		cd = cooldownOverride
+	}
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	if last, ok := e.lastFired[key]; ok && cd > 0 && now.Sub(last) < cd {
+		return nil
+	}
+	e.lastFired[key] = now
+	return &Alert{Key: key, Severity: sev, Title: title, Body: body, At: now}
+}
+
+// Active reports whether a threshold key is currently firing.
+func (e *Engine) Active(key string) bool {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	return e.active[key]
+}
