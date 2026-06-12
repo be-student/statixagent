@@ -20,7 +20,7 @@ fixtures; everything that touches the live OS sits behind an interface and `//go
 
 ## Phase 1 — Metric collection (read side)
 
-- [ ] `internal/procfs`: parsers for `/proc/stat` (CPU), `/proc/meminfo`, `/proc/loadavg`,
+- [x] `internal/procfs`: parsers for `/proc/stat` (CPU), `/proc/meminfo`, `/proc/loadavg`,
       `/proc/uptime`, `/proc/net/dev`, `/proc/diskstats`, `/proc/sys/fs/file-nr`,
       process count from `/proc/[pid]`. Pure functions over `io.Reader` — fixture tests.
 - [ ] `internal/collect`: `Collector` interface + snapshot model (`Snapshot` struct with
