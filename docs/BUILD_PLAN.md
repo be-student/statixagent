@@ -13,8 +13,8 @@ fixtures; everything that touches the live OS sits behind an interface and `//go
 
 - [x] Git repo, MVP spec committed
 - [x] Build plan + architecture docs
-- [ ] Go module `github.com/eliau2005/statixagent`, repo layout, Makefile, lint config
-- [ ] `internal/config`: TOML config schema (bot token, chat ID, enabled monitors,
+- [x] Go module `github.com/eliau2005/statixagent`, repo layout, Makefile, lint config
+- [x] `internal/config`: TOML config schema (bot token, chat ID, enabled monitors,
       thresholds, services/ports/endpoints lists, auto-update flag), load/validate/save,
       0600 permission enforcement on save. Unit tests.
 
