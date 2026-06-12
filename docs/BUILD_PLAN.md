@@ -45,13 +45,15 @@ fixtures; everything that touches the live OS sits behind an interface and `//go
 
 ## Phase 3 — SSH & security monitoring
 
-- [ ] `internal/sshwatch`: auth-log line parser (sshd journald/auth.log formats):
+- [x] `internal/sshwatch`: auth-log line parser (sshd journald/auth.log formats):
       accepted logins (user, IP, method key/password), failed attempts, invalid users,
-      root logins, disconnects. Pure parser + fixture tests.
-- [ ] Brute-force detector: sliding-window counter per IP with threshold alert. Unit tests.
-- [ ] Live sessions via utmp parsing (`/var/run/utmp`) — binary format reader, fixture test.
-- [ ] `authorized_keys` change watcher (hash polling). Unit tests with temp dirs.
-- [ ] Geo-IP: offline-friendly — ip-api.com lookup with cache, graceful no-network fallback.
+      root logins, disconnects. Pure parser + fixture tests. Event ring buffer (History).
+- [x] Brute-force detector: sliding-window counter per IP with threshold alert and
+      quiet-period dedupe during ongoing attacks. Unit tests.
+- [x] Live sessions via utmp parsing (`/var/run/utmp`) — binary format reader, fixture test.
+- [x] `authorized_keys` change watcher (hash polling). Unit tests with temp dirs.
+- [x] Geo-IP: offline-friendly — ip-api.com lookup with cache, private-IP short-circuit,
+      graceful no-network fallback.
 
 ## Phase 4 — Alert engine
 
