@@ -1,0 +1,48 @@
+name: Release
+
+# Tag a version (git tag v1.0.0 && git push --tags) to build, sign, and
+# publish release assets. Requires the STATIX_SIGNING_KEY repo secret
+# (hex ed25519 private key from `go run ./tools/sign keygen`).
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.25"
+      - run: go test ./...
+
+      - name: Build release artifacts
+        env:
+          STATIX_SIGNING_KEY: ${{ secrets.STATIX_SIGNING_KEY }}
+        run: |
+          set -euo pipefail
+          PUBKEY="$(go run ./tools/sign pubkey)"
+          VERSION="${GITHUB_REF_NAME}"
+          mkdir -p dist
+          for arch in amd64 arm64; do
+            GOOS=linux GOARCH=$arch go build -trimpath \
+              -ldflags "-s -w -X main.version=$VERSION -X main.pubKeyHex=$PUBKEY" \
+              -o "dist/statix-agent_linux_$arch" ./cmd/statix-agent
+            GOOS=linux GOARCH=$arch go build -trimpath -ldflags "-s -w" \
+              -o "dist/statix-install_linux_$arch" ./cmd/statix-install
+          done
+          cd dist
+          sha256sum * > checksums.txt
+          STATIX_SIGNING_KEY="$STATIX_SIGNING_KEY" go run ../tools/sign file checksums.txt
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" dist/* \
+            --title "$GITHUB_REF_NAME" \
+            --generate-notes

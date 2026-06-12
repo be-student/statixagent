@@ -97,9 +97,13 @@ fixtures; everything that touches the live OS sits behind an interface and `//go
 
 ## Phase 9 — Hardening & release
 
-- [ ] End-to-end smoke build for linux/amd64 + linux/arm64.
-- [ ] README with install instructions; SECURITY.md notes from MVP §7.
-- [ ] GitHub Actions release workflow (build, checksum, sign, release).
+- [x] End-to-end smoke build for linux/amd64 + linux/arm64.
+- [x] README with install instructions; SECURITY.md notes from MVP §7.
+- [x] GitHub Actions CI + release workflow (build, checksum, ed25519 sign via
+      tools/sign, publish). Makefile mirrors release builds locally.
+
+**All phases complete — the MVP is built.** Future work beyond the MVP lives in
+mvp.md §8 (out of scope) and would start with bot-triggered remediation actions.
 
 ## Out of scope (per MVP §8)
 
