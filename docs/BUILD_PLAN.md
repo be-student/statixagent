@@ -35,13 +35,13 @@ fixtures; everything that touches the live OS sits behind an interface and `//go
 
 ## Phase 2 — Services, Docker, reachability
 
-- [ ] `internal/services`: systemd unit status via `systemctl show` invocation (interface
+- [x] `internal/services`: systemd unit status via `systemctl show` invocation (interface
       + fake for tests), specific-process presence via /proc scan, TCP port checks,
       HTTP healthchecks with timeout + expected-status.
-- [ ] `internal/dockermon`: Docker Engine API over unix socket (no SDK dependency —
+- [x] `internal/dockermon`: Docker Engine API over unix socket (no SDK dependency —
       plain HTTP client): container list, per-container stats, restart-loop detection
       (restart count delta). Fixture tests against recorded API JSON.
-- [ ] `internal/netcheck`: SSL certificate expiry checks for configured endpoints.
+- [x] `internal/netcheck`: SSL certificate expiry checks (+ TCP latency helper).
 
 ## Phase 3 — SSH & security monitoring
 
