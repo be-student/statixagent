@@ -23,12 +23,12 @@ fixtures; everything that touches the live OS sits behind an interface and `//go
 - [x] `internal/procfs`: parsers for `/proc/stat` (CPU), `/proc/meminfo`, `/proc/loadavg`,
       `/proc/uptime`, `/proc/net/dev`, `/proc/diskstats`, `/proc/sys/fs/file-nr`,
       process count from `/proc/[pid]`. Pure functions over `io.Reader` — fixture tests.
-- [ ] `internal/collect`: `Collector` interface + snapshot model (`Snapshot` struct with
-      CPU/mem/disk/net/uptime sections). Delta-based rate computation (CPU %, net B/s,
-      disk IOPS) between consecutive samples. Unit tests with synthetic samples.
-- [ ] `internal/thermal`: `/sys/class/thermal` + `/sys/class/hwmon` parsing (temp, fans),
-      throttle detection. Fixture tests.
-- [ ] `internal/power`: `/sys/class/power_supply` parsing — battery %, AC online,
+- [x] `internal/collect`: snapshot model (`Snapshot` struct with CPU/mem/disk/net/uptime
+      sections). Delta-based rate computation (CPU %, net B/s, disk IOPS) between
+      consecutive samples, counter-reset safety, partition filtering. Unit tests.
+- [x] `internal/sysfs` (thermal): `/sys/class/thermal` + `/sys/class/hwmon` parsing
+      (temp, fans), throttle detection. fstest.MapFS fixture tests.
+- [x] `internal/sysfs` (power): `/sys/class/power_supply` parsing — battery %, AC online,
       health (full vs design), wattage, time-to-empty estimate. Fixture tests.
 - [ ] Disk usage per mount (statfs) behind `//go:build linux`; mount filtering logic
       (skip pseudo-FS) is platform-neutral and tested.
