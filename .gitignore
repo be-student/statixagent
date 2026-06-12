@@ -2,6 +2,9 @@
 /dist/
 *.exe
 *.test
+*.txt
 coverage.out
 
 .claude/
+
+
