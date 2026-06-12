@@ -80,10 +80,11 @@ fixtures; everything that touches the live OS sits behind an interface and `//go
 
 ## Phase 7 — Installer TUI
 
-- [ ] `cmd/statix-install` with Bubble Tea: token/chat-ID entry (with guidance),
-      monitor toggles, thresholds, service/port selection, auto-update opt-in,
-      write config (0600), install binary, create+start systemd unit.
-- [ ] `install.sh` one-liner entry script (download release for arch, run installer).
+- [x] `cmd/statix-install` with Bubble Tea: token/chat-ID entry (with guidance),
+      monitor toggles, thresholds, service/port selection, auto-update opt-in;
+      `internal/install` writes config (0600), installs binary, creates+starts the
+      systemd unit (prefix-relative + fake runner → fully unit-tested).
+- [x] `install.sh` one-liner entry script (arch detection, checksum verify, run TUI).
 
 ## Phase 8 — Self-update
 
