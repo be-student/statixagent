@@ -1,0 +1,27 @@
+# statix-agent systemd unit (MVP §2: Restart=always, starts on boot).
+# Installed by statix-install to /etc/systemd/system/statix-agent.service.
+[Unit]
+Description=StatixAgent VPS/laptop monitoring agent
+Documentation=https://github.com/eliau2005/statixagent
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/statix-agent --config /etc/statix-agent/config.toml
+Restart=always
+RestartSec=5
+
+# Hardening: the agent only reads system state and talks to Telegram.
+NoNewPrivileges=yes
+ProtectHome=read-only
+ProtectSystem=full
+ReadWritePaths=/etc/statix-agent
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+MemoryMax=128M
+
+[Install]
+WantedBy=multi-user.target

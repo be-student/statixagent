@@ -68,13 +68,15 @@ fixtures; everything that touches the live OS sits behind an interface and `//go
 - [x] `internal/bot`: command router with chat-ID allowlist + formatters for status,
       cpu/mem/disk/net/temp/battery, services, docker, ssh sessions/history/fails,
       and push alerts. HTML-escaped, emoji-status, usage bars. Unit tests.
-- [ ] Push alerts wired from the alert engine to the bot sender (Phase 6 wiring).
+- [x] Push alerts wired from the alert engine to the bot sender (Phase 6 wiring).
 
 ## Phase 6 — Agent daemon
 
-- [ ] `cmd/statix-agent`: main loop — goroutines for sampler, bot listener, ssh watcher,
-      alert evaluator; graceful shutdown on SIGTERM; panic-safe goroutine wrapper.
-- [ ] systemd unit file template (`Restart=always`, hardening directives).
+- [x] `cmd/statix-agent` + `internal/agent`: main loop — goroutines for sampler, bot
+      listener, ssh watcher (journalctl/auth.log tail with auto-restart), keys watcher;
+      graceful shutdown on SIGTERM; panic-safe goroutine wrapper; platform-neutral
+      orchestrator with injected Sources, tested with fakes.
+- [x] systemd unit file template (`Restart=always`, hardening directives).
 
 ## Phase 7 — Installer TUI
 
