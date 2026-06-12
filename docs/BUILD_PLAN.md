@@ -30,8 +30,8 @@ fixtures; everything that touches the live OS sits behind an interface and `//go
       (temp, fans), throttle detection. fstest.MapFS fixture tests.
 - [x] `internal/sysfs` (power): `/sys/class/power_supply` parsing — battery %, AC online,
       health (full vs design), wattage, time-to-empty estimate. Fixture tests.
-- [ ] Disk usage per mount (statfs) behind `//go:build linux`; mount filtering logic
-      (skip pseudo-FS) is platform-neutral and tested.
+- [x] Disk usage per mount (statfs) behind `//go:build linux`; mount filtering logic
+      (skip pseudo-FS, dedupe bind mounts, octal unescape) is platform-neutral and tested.
 
 ## Phase 2 — Services, Docker, reachability
 
