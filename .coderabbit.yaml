@@ -1,6 +1,4 @@
 # CodeRabbit configuration for automatic reviews on all Pull Requests
-version: "1"
-
 reviews:
   # Automatically triggers reviews upon creation or updates of any PR
   auto_review:
