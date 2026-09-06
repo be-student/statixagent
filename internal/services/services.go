@@ -160,6 +160,13 @@ type HTTPSpec struct {
 
 // CheckHTTP probes each endpoint and compares the status code.
 func CheckHTTP(ctx context.Context, client *http.Client, checks []HTTPSpec) []Result {
+	// Health checks report the configured endpoint's own status. Following a
+	// redirect would hide both expected 3xx responses and unexpected redirects.
+	probeClient := *client
+	probeClient.CheckRedirect = func(_ *http.Request, _ []*http.Request) error {
+		return http.ErrUseLastResponse
+	}
+
 	out := make([]Result, 0, len(checks))
 	for _, c := range checks {
 		want := c.ExpectStatus
@@ -178,7 +185,7 @@ func CheckHTTP(ctx context.Context, client *http.Client, checks []HTTPSpec) []Re
 			continue
 		}
 		start := time.Now()
-		resp, err := client.Do(req)
+		resp, err := probeClient.Do(req)
 		elapsed := time.Since(start).Round(time.Millisecond)
 		if err != nil {
 			cancel()
