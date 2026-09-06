@@ -1,0 +1,11 @@
+# CodeRabbit configuration for automatic reviews on all Pull Requests
+reviews:
+  # Automatically triggers reviews upon creation or updates of any PR
+  auto_review:
+    enabled: true
+    # Regex patterns for target branches; ".*" reviews PRs targeting any branch
+    base_branches:
+      - ".*"
+
+  # Disables status messages unless a critical issue occurs
+  review_status: false
