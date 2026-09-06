@@ -2,13 +2,12 @@
 version: "1"
 
 reviews:
-  # Enables automatic reviews on all target branches using a wildcard
-  target_branches:
-    - "*"
-  
   # Automatically triggers reviews upon creation or updates of any PR
   auto_review:
     enabled: true
+    # Regex patterns for target branches; ".*" reviews PRs targeting any branch
+    base_branches:
+      - ".*"
 
   # Disables status messages unless a critical issue occurs
   review_status: false
