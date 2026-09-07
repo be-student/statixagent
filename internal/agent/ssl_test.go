@@ -67,11 +67,12 @@ func TestSSLAddRemove(t *testing.T) {
 func TestCheckCertsAlerts(t *testing.T) {
 	send := &fakeSender{}
 	a := testAgent(send)
-	a.cfg.Watch.SSLHosts = []string{"soon", "verysoon", "fine", "broken"}
+	a.cfg.Watch.SSLHosts = []string{"soon", "verysoon", "old.example", "fine", "broken"}
 	a.src.CheckCerts = func(_ context.Context, hosts []string) []netcheck.CertStatus {
 		return []netcheck.CertStatus{
 			{Host: "soon", DaysLeft: 14},
 			{Host: "verysoon", DaysLeft: 2},
+			{Host: "old.example", DaysLeft: -5},
 			{Host: "fine", DaysLeft: 200},
 			{Host: "broken", Err: "tls: handshake failure"},
 		}
@@ -81,6 +82,7 @@ func TestCheckCertsAlerts(t *testing.T) {
 	for _, want := range []string{
 		"soon expires in 14 days",
 		"verysoon expires in 2 days",
+		"old.example expired 5 days ago",
 		"handshake failure",
 	} {
 		if !send.find(want) {
