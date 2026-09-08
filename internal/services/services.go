@@ -160,6 +160,9 @@ type HTTPSpec struct {
 
 // CheckHTTP probes each endpoint and compares the status code.
 func CheckHTTP(ctx context.Context, client *http.Client, checks []HTTPSpec) []Result {
+	if client == nil {
+		client = http.DefaultClient
+	}
 	// Health checks report the configured endpoint's own status. Following a
 	// redirect would hide both expected 3xx responses and unexpected redirects.
 	probeClient := *client

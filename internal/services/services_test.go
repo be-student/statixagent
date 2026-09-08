@@ -129,4 +129,12 @@ func TestCheckHTTP(t *testing.T) {
 	if !strings.Contains(got[4].Detail, "got 418, want 200") {
 		t.Errorf("mismatch detail = %q", got[4].Detail)
 	}
+
+	// Nil client should default safely without panic.
+	nilClientGot := CheckHTTP(context.Background(), nil, []HTTPSpec{
+		{URL: srv.URL + "/ok"},
+	})
+	if len(nilClientGot) != 1 || nilClientGot[0].State != StateOK {
+		t.Errorf("nil client check failed: %+v", nilClientGot)
+	}
 }

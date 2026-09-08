@@ -101,8 +101,13 @@ func (a *Agent) checkCerts(ctx context.Context) {
 			al = a.engine.Event("ssl:"+st.Host, "SSL check failed",
 				st.Host+": "+st.Err, alert.Warning, now, sslAlertCooldown)
 		case st.DaysLeft < 0:
+			// DaysLeft rounds down, so -1 is anything inside the first day.
+			ago := "less than a day ago"
+			if st.DaysLeft < -1 {
+				ago = fmt.Sprintf("%d days ago", -st.DaysLeft)
+			}
 			al = a.engine.Event("ssl:"+st.Host, "Certificate expired",
-				fmt.Sprintf("%s expired %d days ago", st.Host, -st.DaysLeft), alert.Critical, now, sslAlertCooldown)
+				st.Host+" expired "+ago, alert.Critical, now, sslAlertCooldown)
 		case st.DaysLeft <= 3:
 			al = a.engine.Event("ssl:"+st.Host, "Certificate expiring",
 				fmt.Sprintf("%s expires in %d days", st.Host, st.DaysLeft), alert.Critical, now, sslAlertCooldown)
